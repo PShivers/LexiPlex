@@ -3,7 +3,7 @@ const puzzles = require("../../utils/puzzles");
 
 const pageStyles = {
 	height: "100vh",
-	backgroundColor: "#48525d",
+	backgroundColor: "slategrey",
 	color: "#232129",
 	padding: 50,
 	fontFamily: "-apple-system, Roboto, sans-serif, serif",
@@ -38,7 +38,7 @@ const IndexPage = () => {
 			return (
 				<div
 					key={index}
-					style={{ backgroundColor: "#48525d", margin: 1, padding: 10 }}
+					style={{ backgroundColor: "slategrey", margin: 1, padding: 10 }}
 				>
 					{letter}
 				</div>
