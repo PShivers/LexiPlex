@@ -50,5 +50,11 @@ const puzzles = [
 	},
 	{ word: "", subword1: "", subword2: "", clue: "" },
 ];
+const potentials = [
+	{ word: "adopts", subword1: "ad", subword2: "opts", clue: "" },
+	{ word: "", subword1: "", subword2: "", clue: "" }
+	{ word: "", subword1: "", subword2: "", clue: "" }
+	{ word: "", subword1: "", subword2: "", clue: "" }
+];
 
 module.exports = puzzles;
