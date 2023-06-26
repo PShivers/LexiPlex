@@ -3,7 +3,7 @@ const puzzles = require("../../utils/puzzles");
 
 const pageStyles = {
 	height: "100vh",
-	backgroundColor: "slategray",
+	backgroundColor: "#48525d",
 	color: "#232129",
 	padding: 50,
 	fontFamily: "-apple-system, Roboto, sans-serif, serif",
@@ -24,6 +24,7 @@ const paragraphStyles = {
 	marginBottom: 48,
 };
 const inputStyles = {};
+
 const tileStyles = {
 	display: "flex",
 	marginTop: 5,
@@ -31,13 +32,13 @@ const tileStyles = {
 
 const IndexPage = () => {
 	const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
-	// const answer = "abstaining ab staining;
+
 	const tiles = Array.from(puzzle.answer).map((letter, index) => {
 		if (letter === " ") {
 			return (
 				<div
 					key={index}
-					style={{ backgroundColor: "slategray", margin: 1, padding: 10 }}
+					style={{ backgroundColor: "#48525d", margin: 1, padding: 10 }}
 				>
 					{letter}
 				</div>
@@ -53,6 +54,7 @@ const IndexPage = () => {
 			);
 		}
 	});
+
 	return (
 		<main style={pageStyles}>
 			<h1 style={headingStyles}>
@@ -64,7 +66,7 @@ const IndexPage = () => {
 			<form class="w-full max-w-sm">
 				<div class="flex items-center border-b border-slate-300 py-2">
 					<input
-						class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+						class="appearance-none bg-transparent border-none w-full text-black-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
 						type="text"
 						placeholder="Your answer here..."
 						aria-label="Full name"
