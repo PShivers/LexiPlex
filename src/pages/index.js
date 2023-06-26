@@ -1,4 +1,5 @@
 import * as React from "react";
+const puzzles = require("../../utils/puzzles");
 
 const pageStyles = {
 	height: "100vh",
@@ -23,17 +24,43 @@ const paragraphStyles = {
 	marginBottom: 48,
 };
 const inputStyles = {};
+const tileStyles = {
+	display: "flex",
+	marginTop: 5,
+};
 
 const IndexPage = () => {
+	const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+	// const answer = "abstaining ab staining;
+	const tiles = Array.from(puzzle.answer).map((letter, index) => {
+		if (letter === " ") {
+			return (
+				<div
+					key={index}
+					style={{ backgroundColor: "slategray", margin: 1, padding: 10 }}
+				>
+					{letter}
+				</div>
+			);
+		} else {
+			return (
+				<div
+					key={index}
+					style={{ backgroundColor: "lightgrey", margin: 1, padding: 10 }}
+				>
+					{" "}
+				</div>
+			);
+		}
+	});
 	return (
 		<main style={pageStyles}>
 			<h1 style={headingStyles}>
 				Lexi<span style={logoStyles}>plex</span>
 			</h1>
 			<h2>Today's clue:</h2>
-			<p>
-				When you refuse to participate in applying fake tanner to your stomach?
-			</p>
+			<p>{puzzle.clue}</p>
+			<div style={tileStyles}>{tiles}</div>
 			<form class="w-full max-w-sm">
 				<div class="flex items-center border-b border-slate-300 py-2">
 					<input
