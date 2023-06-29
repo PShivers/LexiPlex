@@ -51,7 +51,7 @@ const puzzles = [
 		word: "accountants",
 		subword1: "account",
 		subword2: "ants",
-		clue: "A group of CPA's recalling insects that attacked when they stepped on a hill?",
+		clue: "Bean counters recalling insects that attacked after stepping on their colony?",
 		structure: 1,
 		answer: "accountants account ants",
 	},
