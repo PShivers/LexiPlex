@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 const puzzles = require("../../utils/puzzles");
 
 const pageStyles = {
@@ -15,7 +16,7 @@ const headingStyles = {
 	marginTop: 0,
 	marginBottom: 30,
 	maxWidth: 320,
-	fontSize: 50,
+	fontSize: 80,
 };
 const logoStyles = {
 	color: "tomato",
@@ -24,14 +25,21 @@ const paragraphStyles = {
 	marginBottom: 48,
 };
 const inputStyles = {};
-
 const tileStyles = {
 	display: "flex",
 	marginTop: 5,
 };
+const letterWrapperStyles = {
+	display: "flex",
+};
+const letterStyles = {
+	backgroundColor: "lightgrey",
+};
 
 const IndexPage = () => {
-	const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+	const todaysPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+
+	const [puzzle, setPuzzle] = useState(todaysPuzzle);
 
 	const tiles = Array.from(puzzle.answer).map((letter, index) => {
 		if (letter === " ") {
@@ -45,14 +53,32 @@ const IndexPage = () => {
 			);
 		} else {
 			return (
-				<div
+				<input
 					key={index}
-					style={{ backgroundColor: "lightgrey", margin: 1, padding: 10 }}
-				>
-					{" "}
-				</div>
+					style={{
+						backgroundColor: "lightgrey",
+						margin: 1,
+						padding: 1,
+						maxWidth: 15,
+					}}
+				/>
 			);
 		}
+	});
+
+	const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+	const letters = Array.from(alphabet).map((letter, index) => {
+		return (
+			<button
+				key={index}
+				data-value={letter}
+				style={letterStyles}
+				class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+			>
+				{letter}
+			</button>
+		);
 	});
 
 	return (
@@ -69,14 +95,16 @@ const IndexPage = () => {
 						class="appearance-none bg-transparent border-none w-full text-black-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
 						type="text"
 						placeholder="Your answer here..."
-						aria-label="Full name"
+						aria-label="Answer"
 					/>
 				</div>
 			</form>{" "}
+			<p>Hints:</p>
+			<p style={letterWrapperStyles}>{letters}</p>
 		</main>
 	);
 };
 
 export default IndexPage;
 
-export const Head = () => <title>Home Page</title>;
+export const Head = () => <title>Lexiplex</title>;
