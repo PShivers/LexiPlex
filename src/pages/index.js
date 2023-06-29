@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 const puzzles = require("../../utils/puzzles");
+// TODO: ADD "HOW TO" MODAL
 
 //#region Styles
 const pageStyles = {
@@ -35,8 +36,9 @@ const letterStyles = {
 //#endregion Styles
 
 const IndexPage = () => {
-	const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
-
+	const [puzzle, setPuzzle] = useState(
+		puzzles[Math.floor(Math.random() * puzzles.length)]
+	);
 	const [disabledButtons, setDisabledButtons] = useState([]);
 	const [solution, setSolution] = useState(
 		Array.from(puzzle.answer).map((letter, index) => {
