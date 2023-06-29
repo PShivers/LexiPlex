@@ -48,6 +48,7 @@ const IndexPage = () => {
 			};
 		})
 	);
+	const [hintCount, setHintCount] = useState(0);
 
 	const tiles = solution.map((position, index) => {
 		if (position.letter === " ") {
@@ -55,7 +56,13 @@ const IndexPage = () => {
 				<div
 					key={index}
 					data-value={position.letter}
-					style={{ backgroundColor: "slategrey", margin: 1, padding: 10 }}
+					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+					style={{
+						backgroundColor: "slategrey",
+						margin: 1,
+						minWidth: 41,
+						minHeight: 41,
+					}}
 				>
 					{position.letter}
 				</div>
@@ -65,10 +72,12 @@ const IndexPage = () => {
 				<div
 					key={index}
 					data-value={position.letter}
+					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 					style={{
 						backgroundColor: "lightgrey",
 						margin: 1,
-						padding: 10,
+						minWidth: 41,
+						minHeight: 41,
 					}}
 				>
 					{position.guessed ? position.letter : null}
@@ -78,24 +87,6 @@ const IndexPage = () => {
 	});
 
 	const alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-	const handleLetterClick = (letter) => {
-		const updatedSolution = solution.map((position) => {
-			if (position.letter === letter) {
-				return {
-					...position,
-					guessed: true,
-				};
-			}
-			return position;
-		});
-
-		setSolution(updatedSolution);
-		setDisabledButtons((prevDisabledButtons) => [
-			...prevDisabledButtons,
-			letter,
-		]);
-	};
 
 	const letters = Array.from(alphabet).map((letter, index) => {
 		return (
@@ -116,6 +107,25 @@ const IndexPage = () => {
 		);
 	});
 
+	const handleLetterClick = (letter) => {
+		const updatedSolution = solution.map((position) => {
+			if (position.letter === letter) {
+				return {
+					...position,
+					guessed: true,
+				};
+			}
+			return position;
+		});
+
+		setSolution(updatedSolution);
+		setDisabledButtons((prevDisabledButtons) => [
+			...prevDisabledButtons,
+			letter,
+		]);
+		setHintCount((prevHintCount) => prevHintCount + 1);
+	};
+
 	return (
 		<main style={pageStyles}>
 			<h1 style={headingStyles}>
@@ -134,7 +144,7 @@ const IndexPage = () => {
 					/>
 				</div>
 			</form>{" "}
-			<p>Hints:</p>
+			<p>Hints used: {hintCount}</p>
 			<p style={letterWrapperStyles}>{letters}</p>
 		</main>
 	);
