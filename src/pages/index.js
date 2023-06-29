@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 const puzzles = require("../../utils/puzzles");
 
+//#region Styles
 const pageStyles = {
 	height: "100vh",
 	backgroundColor: "slategrey",
@@ -21,10 +22,6 @@ const headingStyles = {
 const logoStyles = {
 	color: "tomato",
 };
-const paragraphStyles = {
-	marginBottom: 48,
-};
-const inputStyles = {};
 const tileStyles = {
 	display: "flex",
 	marginTop: 5,
@@ -33,40 +30,70 @@ const letterWrapperStyles = {
 	display: "flex",
 };
 const letterStyles = {
-	backgroundColor: "lightgrey",
+	// backgroundColor: "lightgrey",
 };
+//#endregion Styles
 
 const IndexPage = () => {
-	const todaysPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+	const puzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
 
-	const [puzzle, setPuzzle] = useState(todaysPuzzle);
+	const [disabledButtons, setDisabledButtons] = useState([]);
+	const [solution, setSolution] = useState(
+		Array.from(puzzle.answer).map((letter, index) => {
+			return {
+				letter: letter,
+				guessed: false,
+			};
+		})
+	);
 
-	const tiles = Array.from(puzzle.answer).map((letter, index) => {
-		if (letter === " ") {
+	const tiles = solution.map((position, index) => {
+		if (position.letter === " ") {
 			return (
 				<div
 					key={index}
+					data-value={position.letter}
 					style={{ backgroundColor: "slategrey", margin: 1, padding: 10 }}
 				>
-					{letter}
+					{position.letter}
 				</div>
 			);
 		} else {
 			return (
-				<input
+				<div
 					key={index}
+					data-value={position.letter}
 					style={{
 						backgroundColor: "lightgrey",
 						margin: 1,
-						padding: 1,
-						maxWidth: 15,
+						padding: 10,
 					}}
-				/>
+				>
+					{position.guessed ? position.letter : null}
+				</div>
 			);
 		}
 	});
 
 	const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+	const handleLetterClick = (letter) => {
+		const updatedSolution = solution.map((position) => {
+			if (position.letter === letter) {
+				return {
+					...position,
+					guessed: true,
+				};
+			}
+			return position;
+		});
+
+		setSolution(updatedSolution);
+		setDisabledButtons((prevDisabledButtons) => [
+			...prevDisabledButtons,
+			letter,
+		]);
+	};
 
 	const letters = Array.from(alphabet).map((letter, index) => {
 		return (
@@ -74,7 +101,13 @@ const IndexPage = () => {
 				key={index}
 				data-value={letter}
 				style={letterStyles}
-				class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+				class={
+					disabledButtons.includes(letter)
+						? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50"
+						: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+				}
+				onClick={() => handleLetterClick(letter)}
+				disabled={disabledButtons.includes(letter)}
 			>
 				{letter}
 			</button>
