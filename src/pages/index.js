@@ -5,7 +5,7 @@ import Modal from "../components/modal"; // Import your modal component here
 const puzzles = require("../../utils/puzzles");
 
 // TODO: add check on submit to see if it is right
-// TODO: ADD "HOW TO" MODAL
+// TODO: get modal to fit iphone se
 // TODO: add logic when clicking btn to check if puzzle isSolved
 // TODO: add logic so that a user can't win if they got there using hints alone
 // TODO: add congratulations modal upon completion of puzzle.
@@ -14,13 +14,9 @@ const puzzles = require("../../utils/puzzles");
 //#region Styles
 const pageStyles = {
 	minHeight: "100vh",
-	backgroundColor: "slategrey",
-	color: "#232129",
-	padding: 20,
+	backgroundColor: "#f5f5f5",
+	color: "#242424",
 	fontFamily: "-apple-system, Roboto, sans-serif, serif",
-	display: "flex",
-	flexDirection: "column",
-	alignItems: "center",
 };
 
 const logoStyles = {
@@ -38,42 +34,29 @@ const IndexPage = () => {
 	const [puzzle, setPuzzle] = useState(
 		puzzles[Math.floor(Math.random() * puzzles.length)]
 	);
-	const [disabledButtons, setDisabledButtons] = useState([]);
-	const [solution, setSolution] = useState(
-		Array.from(puzzle.answer).map((letter, index) => {
-			return {
-				letter: letter,
-				guessed: false,
-			};
-		})
-	);
 	const [hintCount, setHintCount] = useState(0);
+	const [disabledButtons, setDisabledButtons] = useState([]);
 
-	const tiles = solution.map((position, index) => {
-		if (position.letter === " ") {
-			return (
+	const [solution, setSolution] = useState(
+		puzzle.answer.split(" ").map((word) =>
+			Array.from(word).map((letter) => ({
+				letter: letter.toUpperCase(),
+				guessed: false,
+			}))
+		)
+	);
+
+	const tiles = solution.map((word, wordIndex) => (
+		<div
+			key={wordIndex}
+			className="flex justify-center h-full mt-2 md:mt-0 mr-3 ml-3"
+		>
+			{word.map((position, index) => (
 				<div
 					key={index}
 					data-value={position.letter}
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+					className="bg-white text-blue-500 font-bold py-2 px-4 rounded border border-slate-300"
 					style={{
-						backgroundColor: "slategrey",
-						margin: 1,
-						minWidth: 41,
-						minHeight: 41,
-					}}
-				>
-					{position.letter}
-				</div>
-			);
-		} else {
-			return (
-				<div
-					key={index}
-					data-value={position.letter}
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-					style={{
-						backgroundColor: "lightgrey",
 						margin: 1,
 						minWidth: 41,
 						minHeight: 41,
@@ -81,40 +64,49 @@ const IndexPage = () => {
 				>
 					{position.guessed ? position.letter : null}
 				</div>
-			);
-		}
-	});
+			))}
+		</div>
+	));
 
-	const alphabet = "abcdefghijklmnopqrstuvwxyz";
+	// const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+	const qwerty = [
+		["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+		["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+		["Z", "X", "C", "V", "B", "N", "M"],
+	];
 
-	const letters = Array.from(alphabet).map((letter, index) => {
-		return (
-			<button
-				key={index}
-				data-value={letter}
-				class={
-					disabledButtons.includes(letter)
-						? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 m-1"
-						: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded m-1 drop-shadow-xl"
-				}
-				onClick={() => handleLetterClick(letter)}
-				disabled={disabledButtons.includes(letter)}
-			>
-				{letter}
-			</button>
-		);
-	});
+	const letters = qwerty.map((row, rowIndex) => (
+		<div key={rowIndex} className="flex justify-center">
+			{row.map((letter, index) => (
+				<button
+					key={index}
+					data-value={letter}
+					className={
+						disabledButtons.includes(letter)
+							? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 m-1"
+							: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded m-1 drop-shadow-2xl"
+					}
+					onClick={() => handleLetterClick(letter)}
+					disabled={disabledButtons.includes(letter)}
+				>
+					{letter}
+				</button>
+			))}
+		</div>
+	));
 
 	const handleLetterClick = (letter) => {
-		const updatedSolution = solution.map((position) => {
-			if (position.letter === letter) {
-				return {
-					...position,
-					guessed: true,
-				};
-			}
-			return position;
-		});
+		const updatedSolution = solution.map((word) =>
+			word.map((position) => {
+				if (position.letter === letter) {
+					return {
+						...position,
+						guessed: true,
+					};
+				}
+				return position;
+			})
+		);
 
 		setSolution(updatedSolution);
 		setDisabledButtons((prevDisabledButtons) => [
@@ -125,8 +117,8 @@ const IndexPage = () => {
 	};
 
 	return (
-		<main style={pageStyles}>
-			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-black border-x-0 drop-shadow-lg">
+		<main style={pageStyles} className="flex flex-col items-center md:p-20">
+			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg">
 				<div className="grow-[1]"></div>
 				<h1 className="text-5xl md:text-8xl grow-[2] drop-shadow-lg	">
 					Lexi
@@ -155,9 +147,11 @@ const IndexPage = () => {
 
 			<h2 className="text-xl md:text-3xl">Today's clue:</h2>
 			<p className="text-center text-xl	md:text-3xl mb-3">{puzzle.clue}</p>
-			<div className="flex flex-wrap justify-center mt-3">{tiles}</div>
+			<div className="flex flex-col flex-shrink md:flex-row flex-wrap justify-center mt-3">
+				{tiles}
+			</div>
 			<form className="w-full max-w-sm mb-3 mt-3">
-				<div className="flex items-center border-b border-slate-300 py-2">
+				<div className="flex items-center border-b border-slate-500 py-2">
 					<input
 						className="appearance-none bg-transparent border-none w-full text-white mr-3 py-1 px-2 leading-tight focus:outline-none"
 						type="text"
@@ -167,7 +161,7 @@ const IndexPage = () => {
 				</div>
 			</form>
 			<p>Hints used: {hintCount}</p>
-			<div className="flex flex-wrap shrink justify-center mt-3 ml-3 mr-3">
+			<div className="flex flex-col flex-shrink justify-center items-center mt-3 ml-3 mr-3">
 				{letters}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
