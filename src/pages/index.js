@@ -1,37 +1,27 @@
 import * as React from "react";
 import { useState } from "react";
 const puzzles = require("../../utils/puzzles");
+// TODO: add check on submit to see if it is right
 // TODO: ADD "HOW TO" MODAL
+// TODO: add logic when clicking btn to check if puzzle isSolved
+// TODO: add logic so that a user can't win if they got there using hints alone
+// TODO: add congratulations modal upon completion of puzzle.
+// TODO: TIMER?
 
 //#region Styles
 const pageStyles = {
-	height: "100vh",
+	minHeight: "100vh",
 	backgroundColor: "slategrey",
 	color: "#232129",
-	padding: 50,
+	padding: 20,
 	fontFamily: "-apple-system, Roboto, sans-serif, serif",
 	display: "flex",
 	flexDirection: "column",
 	alignItems: "center",
 };
-const headingStyles = {
-	marginTop: 0,
-	marginBottom: 30,
-	maxWidth: 320,
-	fontSize: 80,
-};
+
 const logoStyles = {
 	color: "tomato",
-};
-const tileStyles = {
-	display: "flex",
-	marginTop: 5,
-};
-const letterWrapperStyles = {
-	display: "flex",
-};
-const letterStyles = {
-	// backgroundColor: "lightgrey",
 };
 //#endregion Styles
 
@@ -93,11 +83,10 @@ const IndexPage = () => {
 			<button
 				key={index}
 				data-value={letter}
-				style={letterStyles}
 				class={
 					disabledButtons.includes(letter)
-						? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50"
-						: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+						? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 m-1"
+						: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded m-1"
 				}
 				onClick={() => handleLetterClick(letter)}
 				disabled={disabledButtons.includes(letter)}
@@ -128,24 +117,24 @@ const IndexPage = () => {
 
 	return (
 		<main style={pageStyles}>
-			<h1 style={headingStyles}>
+			<h1 className="text-3xl	mb-3 md:text-8xl md:mb-8">
 				Lexi<span style={logoStyles}>plex</span>
 			</h1>
-			<h2>Today's clue:</h2>
-			<p>{puzzle.clue}</p>
-			<div style={tileStyles}>{tiles}</div>
-			<form class="w-full max-w-sm">
-				<div class="flex items-center border-b border-slate-300 py-2">
+			<h2 className="text-xl md:text-3xl">Today's clue:</h2>
+			<p className="text-center text-xl	md:text-3xl mb-3">{puzzle.clue}</p>
+			<div className="flex flex-wrap justify-center mt-3">{tiles}</div>
+			<form className="w-full max-w-sm mb-3 mt-3">
+				<div className="flex items-center border-b border-slate-300 py-2">
 					<input
-						class="appearance-none bg-transparent border-none w-full text-black-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+						className="appearance-none bg-transparent border-none w-full text-black-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
 						type="text"
 						placeholder="Your answer here..."
 						aria-label="Answer"
 					/>
 				</div>
-			</form>{" "}
+			</form>
 			<p>Hints used: {hintCount}</p>
-			<p style={letterWrapperStyles}>{letters}</p>
+			<div className="flex flex-wrap shrink justify-center mt-3">{letters}</div>
 		</main>
 	);
 };

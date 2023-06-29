@@ -43,7 +43,7 @@ const puzzles = [
 		word: "abacination",
 		subWord1: "abaci",
 		subWord2: "nation",
-		clue: "When a country of people who love old school counting devices that blind you for your crimes?",
+		clue: "When a country of people who love old school counting devices blind you for your crimes?",
 		structure: 2,
 		answer: " abaci nation abacination",
 	},
