@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
-import Modal from "../components/modal"; // Import your modal component here
+import Modal from "../components/modal";
+import CongratulationsModal from "../components/congratulationsModal";
 
 const puzzles = require("../../utils/puzzles");
 
@@ -13,6 +14,7 @@ const puzzles = require("../../utils/puzzles");
 // TODO: add dark mode toggle
 // TODO: get tiles and letters to fit on mobile well
 // TODO: add toggle between alpha and qwerty
+// TODO: obscure data-attr so that people can't cheat in dev tools
 
 //#region Styles
 const pageStyles = {
@@ -24,6 +26,10 @@ const pageStyles = {
 
 const logoStyles = {
 	color: "tomato",
+};
+
+const tileRowStyles = {
+	minHeight: "25.6px",
 };
 
 const letterStyles = {
@@ -39,11 +45,16 @@ const IndexPage = () => {
 		setModalVisible(true);
 	};
 
-	const [puzzle, setPuzzle] = useState(
-		puzzles[Math.floor(Math.random() * puzzles.length)]
-	);
+	// const [puzzle, setPuzzle] = useState(
+	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
+	// );
+	const [puzzle, setPuzzle] = useState(puzzles[6]);
 	const [hintCount, setHintCount] = useState(0);
 	const [disabledButtons, setDisabledButtons] = useState([]);
+	const [answer, setAnswer] = useState("");
+	const [showCongratulationsModal, setShowCongratulationsModal] =
+		useState(false);
+	const [showWrongAnswerFeedback, setShowWrongAnswerFeedback] = useState(false);
 
 	const [solution, setSolution] = useState(
 		puzzle.answer.split(" ").map((word) =>
@@ -57,20 +68,18 @@ const IndexPage = () => {
 	const tiles = solution.map((word, wordIndex) => (
 		<div
 			key={wordIndex}
-			className="flex justify-center h-full mt-2 md:mt-0 mr-3 ml-3"
+			style={tileRowStyles}
+			className="flex justify-center h-full mb-2 md:mt-0 md:mr-3"
 		>
 			{word.map((position, index) => (
-				<div
-					key={index}
-					data-value={position.letter}
-					className="bg-white text-blue-500 font-bold py-2 px-4 rounded border border-slate-300"
-					style={{
-						margin: 1,
-						minWidth: 41,
-						minHeight: 41,
-					}}
-				>
-					{position.guessed ? position.letter : null}
+				<div key={index} style={tileRowStyles}>
+					<div
+						key={index}
+						data-value={position.letter}
+						className="bg-white text-blue-500 font-bold rounded border border-slate-300 w-6 min-h-full text-center"
+					>
+						{position.guessed ? position.letter : null}
+					</div>
 				</div>
 			))}
 		</div>
@@ -127,8 +136,21 @@ const IndexPage = () => {
 		setHintCount((prevHintCount) => prevHintCount + 1);
 	};
 
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		if (answer.toLowerCase() === puzzle.answer.toLowerCase()) {
+			setShowCongratulationsModal(true);
+		} else {
+			setShowWrongAnswerFeedback(true);
+
+			setTimeout(() => {
+				setShowWrongAnswerFeedback(false);
+			}, 1000);
+		}
+	};
+
 	return (
-		<main style={pageStyles} className="flex flex-col items-center md:p-20">
+		<main style={pageStyles} className="flex flex-col items-center md:p-5">
 			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg">
 				<div className="grow-[1]"></div>
 				<h1 className="text-5xl md:text-8xl grow-[2] drop-shadow-lg	">
@@ -155,19 +177,23 @@ const IndexPage = () => {
 					</svg>
 				</div>
 			</header>
-
 			<h2 className="text-xl md:text-3xl">Today's clue:</h2>
-			<p className="text-center text-xl	md:text-3xl mb-3">{puzzle.clue}</p>
-			<div className="flex flex-col flex-shrink md:flex-row flex-wrap justify-center mt-3">
+			<p className="w-11/12 text-center text-xl	md:text-3xl mb-3">
+				{puzzle.clue}
+			</p>
+			<div className="flex flex-col w-11/12 md:flex-row flex-wrap justify-center mt-3">
 				{tiles}
 			</div>
-			<form className="w-full max-w-sm mb-3 mt-3">
+			<form className="w-11/12 max-w-sm mb-3 mt-3" onSubmit={handleSubmit}>
 				<div className="flex items-center border-b border-slate-500 py-2">
 					<input
-						className="appearance-none bg-transparent border-none w-full text-white mr-3 py-1 px-2 leading-tight focus:outline-none"
+						className={`appearance-none bg-transparent border-none w-full text-grey mr-3 py-1 px-2 leading-tight focus:outline-none ${
+							showWrongAnswerFeedback ? "wrong-answer" : ""
+						}`}
 						type="text"
 						placeholder="Your answer here..."
 						aria-label="Answer"
+						onChange={(e) => setAnswer(e.target.value)}
 					/>
 				</div>
 			</form>
@@ -176,6 +202,31 @@ const IndexPage = () => {
 				{letters}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
+			{showCongratulationsModal && (
+				<CongratulationsModal
+					closeModal={() => setShowCongratulationsModal(false)}
+				/>
+			)}
+			<style>
+				{`
+  .wrong-answer {
+    animation: wrong-answer-animation 1s linear;
+  }
+
+  @keyframes wrong-answer-animation {
+    0% {
+      color: inherit;
+    }
+    5% {
+      color: red;
+    }
+    100% {
+      color: inherit;
+    }
+  }
+  `}
+			</style>
+			;
 		</main>
 	);
 };
