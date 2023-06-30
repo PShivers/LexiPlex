@@ -25,6 +25,11 @@ const pageStyles = {
 const logoStyles = {
 	color: "tomato",
 };
+
+const letterStyles = {
+	minWidth: "10%",
+	minHeight: "10%",
+};
 //#endregion Styles
 
 const IndexPage = () => {
@@ -79,21 +84,24 @@ const IndexPage = () => {
 	];
 
 	const letters = qwerty.map((row, rowIndex) => (
-		<div key={rowIndex} className="flex justify-center">
+		<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
 			{row.map((letter, index) => (
-				<button
-					key={index}
-					data-value={letter}
-					className={
-						disabledButtons.includes(letter)
-							? "bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 m-1"
-							: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded m-1 drop-shadow-2xl"
-					}
-					onClick={() => handleLetterClick(letter)}
-					disabled={disabledButtons.includes(letter)}
-				>
-					{letter}
-				</button>
+				<div className="flex justify-center items-center" style={letterStyles}>
+					<button
+						key={index}
+						data-value={letter}
+						style={letterStyles}
+						className={
+							disabledButtons.includes(letter)
+								? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
+								: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
+						}
+						onClick={() => handleLetterClick(letter)}
+						disabled={disabledButtons.includes(letter)}
+					>
+						{letter}
+					</button>
+				</div>
 			))}
 		</div>
 	));
@@ -164,7 +172,7 @@ const IndexPage = () => {
 				</div>
 			</form>
 			<p>Hints used: {hintCount}</p>
-			<div className="flex flex-col flex-shrink justify-center items-center mt-3 ml-3 mr-3">
+			<div className="flex flex-col justify-center w-11/12 items-center mt-3">
 				{letters}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
