@@ -10,6 +10,9 @@ const puzzles = require("../../utils/puzzles");
 // TODO: add logic so that a user can't win if they got there using hints alone
 // TODO: add congratulations modal upon completion of puzzle.
 // TODO: TIMER?
+// TODO: add dark mode toggle
+// TODO: get tiles and letters to fit on mobile well
+// TODO: add toggle between alpha and qwerty
 
 //#region Styles
 const pageStyles = {
