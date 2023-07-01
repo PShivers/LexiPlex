@@ -28,11 +28,11 @@ const letterStyles = {
 
 const IndexPage = () => {
 	//#region hooks
+	const puzzle = puzzles[4];
 	// const [puzzle, setPuzzle] = useState(
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
 	const [isModalVisible, setModalVisible] = useState(false);
-	const [puzzle, setPuzzle] = useState(puzzles[4]);
 	const [hintsRemaining, setHintsRemaining] = useState(3);
 	const [showHintKB, setShowHintKB] = useState(true);
 	const [disabledButtons, setDisabledButtons] = useState([]);
@@ -80,9 +80,12 @@ const IndexPage = () => {
 
 	const letters = qwerty.map((row, rowIndex) => (
 		<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
-			{console.log("render")}
 			{row.map((letter, index) => (
-				<div className="flex justify-center items-center" style={letterStyles}>
+				<div
+					className="flex justify-center items-center"
+					key={index}
+					style={letterStyles}
+				>
 					<button
 						key={index}
 						data-value={letter}
@@ -198,7 +201,7 @@ const IndexPage = () => {
 						onChange={(e) => setAnswer(e.target.value)}
 					/>
 					<button
-						class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-4 text-white py-0 px-1 rounded"
+						className="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-4 text-white py-0 px-1 rounded"
 						type="submit"
 					>
 						Submit
