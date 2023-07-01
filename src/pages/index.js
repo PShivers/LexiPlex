@@ -49,13 +49,13 @@ const IndexPage = () => {
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
 	const [puzzle, setPuzzle] = useState(puzzles[4]);
-	const [hintCount, setHintCount] = useState(0);
+	const [hintsRemaining, setHintsRemaining] = useState(3);
+	const [showHintKB, setShowHintKB] = useState(true);
 	const [disabledButtons, setDisabledButtons] = useState([]);
 	const [answer, setAnswer] = useState("");
 	const [showCongratulationsModal, setShowCongratulationsModal] =
 		useState(false);
 	const [showWrongAnswerFeedback, setShowWrongAnswerFeedback] = useState(false);
-
 	const [solution, setSolution] = useState(
 		puzzle.answer.split(" ").map((word) =>
 			Array.from(word).map((letter) => ({
@@ -92,30 +92,40 @@ const IndexPage = () => {
 		["Z", "X", "C", "V", "B", "N", "M"],
 	];
 
-	const letters = qwerty.map((row, rowIndex) => (
-		<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
-			{row.map((letter, index) => (
-				<div className="flex justify-center items-center" style={letterStyles}>
-					<button
-						key={index}
-						data-value={letter}
+	const letters =
+		showHintKB &&
+		qwerty.map((row, rowIndex) => (
+			<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
+				{console.log("render")}
+				{row.map((letter, index) => (
+					<div
+						className="flex justify-center items-center"
 						style={letterStyles}
-						className={
-							disabledButtons.includes(letter)
-								? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
-								: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
-						}
-						onClick={() => handleLetterClick(letter)}
-						disabled={disabledButtons.includes(letter)}
 					>
-						{letter}
-					</button>
-				</div>
-			))}
-		</div>
-	));
+						<button
+							key={index}
+							data-value={letter}
+							style={letterStyles}
+							className={
+								disabledButtons.includes(letter)
+									? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
+									: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
+							}
+							onClick={() => handleLetterClick(letter)}
+							disabled={disabledButtons.includes(letter)}
+						>
+							{letter}
+						</button>
+					</div>
+				))}
+			</div>
+		));
 
 	const handleLetterClick = (letter) => {
+		if (hintsRemaining === 0) {
+			setShowHintKB(false);
+			return;
+		}
 		const updatedSolution = solution.map((word) =>
 			word.map((position) => {
 				if (position.letter === letter) {
@@ -133,7 +143,7 @@ const IndexPage = () => {
 			...prevDisabledButtons,
 			letter,
 		]);
-		setHintCount((prevHintCount) => prevHintCount + 1);
+		setHintsRemaining((prevHintsRemaining) => prevHintsRemaining - 1);
 	};
 
 	const handleSubmit = (e) => {
@@ -203,8 +213,8 @@ const IndexPage = () => {
 					</button>
 				</div>
 			</form>
-			<p>Hints used: {hintCount}</p>
-			<div className="flex flex-col justify-center w-11/12 items-center mt-3">
+			<p>Hints remaining: {hintsRemaining}</p>
+			<div className="flex flex-col justify-center w-11/12 lg:w-3/4 items-center mt-3">
 				{letters}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
