@@ -34,7 +34,7 @@ const IndexPage = () => {
 	// );
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [hintsRemaining, setHintsRemaining] = useState(3);
-	const [showHintKB, setShowHintKB] = useState(true);
+	const [hintsDisabled, setHintsDisabled] = useState(false);
 	const [disabledButtons, setDisabledButtons] = useState([]);
 	const [answer, setAnswer] = useState("");
 	const [showCongratulationsModal, setShowCongratulationsModal] =
@@ -91,9 +91,9 @@ const IndexPage = () => {
 						data-value={letter}
 						style={letterStyles}
 						className={
-							disabledButtons.includes(letter)
-								? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
-								: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
+							disabledButtons.includes(letter) || hintsDisabled === true
+								? "w-8 bg-blue-500 text-white font-bold border border-blue-500 rounded md:text-2xl opacity-50"
+								: "w-8 bg-blue-500 text-white font-bold border border-blue-700 rounded md:text-2xl drop-shadow-2xl hover:bg-blue-700"
 						}
 						onClick={() => handleLetterClick(letter)}
 						disabled={disabledButtons.includes(letter)}
@@ -134,7 +134,7 @@ const IndexPage = () => {
 		setHintsRemaining((prevHintsRemaining) => {
 			const newHintsRemaining = prevHintsRemaining - 1;
 			if (newHintsRemaining === 0) {
-				setShowHintKB(false);
+				setHintsDisabled(true);
 			}
 			return newHintsRemaining;
 		});
@@ -225,7 +225,7 @@ const IndexPage = () => {
 			</form>
 			<p>Hints remaining: {hintsRemaining}</p>
 			<div className="flex flex-col justify-center w-11/12 lg:w-3/4 items-center mt-3">
-				{showHintKB ? letters : null}
+				{letters}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
 			{showCongratulationsModal && (
