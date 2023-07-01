@@ -157,14 +157,29 @@ const IndexPage = () => {
 	return (
 		<main style={pageStyles} className="flex flex-col items-center md:p-5">
 			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg">
-				<div className="grow-[1]"></div>
+				<div className="flex items-center grow-[1]">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-6 h-6 w-full"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+						/>
+					</svg>
+				</div>
 				<h1 className="text-5xl md:text-8xl grow-[2] drop-shadow-lg	">
 					Lexi
 					<span className="text-tomato" style={logoStyles}>
 						plex
 					</span>
 				</h1>
-				<div className="flex justify-end items-center grow-[1]">
+				<div className="flex items-center grow-[1]">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -182,8 +197,8 @@ const IndexPage = () => {
 					</svg>
 				</div>
 			</header>
-			<h2 className="text-xl md:text-3xl">Today's clue:</h2>
-			<p className="w-11/12 text-center text-xl	md:text-3xl mb-3">
+			<h2 className="text-2xl md:text-3xl">Today's clue:</h2>
+			<p className="w-11/12 text-center text-3xl md:text-4xl mb-3">
 				{puzzle.clue}
 			</p>
 			<div className="flex flex-col w-11/12 md:flex-row flex-wrap justify-center mt-3">
