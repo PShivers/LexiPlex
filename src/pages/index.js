@@ -96,7 +96,9 @@ const IndexPage = () => {
 								: "w-8 bg-blue-500 text-white font-bold border border-blue-700 rounded md:text-2xl drop-shadow-2xl hover:bg-blue-700"
 						}
 						onClick={() => handleLetterClick(letter)}
-						disabled={disabledButtons.includes(letter)}
+						disabled={
+							disabledButtons.includes(letter) || hintsDisabled === true
+						}
 					>
 						{letter}
 					</button>
@@ -156,7 +158,7 @@ const IndexPage = () => {
 
 	return (
 		<main style={pageStyles} className="flex flex-col items-center md:p-5">
-			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg">
+			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg px-2">
 				<div className="flex items-center grow-[1]">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
