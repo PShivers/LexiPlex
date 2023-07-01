@@ -159,14 +159,14 @@ const IndexPage = () => {
 						plex
 					</span>
 				</h1>
-				<div className="flex items-center grow-[1]">
+				<div className="flex justify-end items-center grow-[1]">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
 						viewBox="0 0 24 24"
 						strokeWidth={1.5}
 						stroke="currentColor"
-						className="w-6 h-6 ml-auto cursor-pointer"
+						className="w-6 h-6 cursor-pointer w-full"
 						onClick={handleSVGClick}
 					>
 						<path
