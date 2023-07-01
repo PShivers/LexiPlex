@@ -2,19 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import Modal from "../components/modal";
 import CongratulationsModal from "../components/congratulationsModal";
-
 const puzzles = require("../../utils/puzzles");
-
-// TODO: add check on submit to see if it is right
-// TODO: get modal to fit iphone se
-// TODO: add logic when clicking btn to check if puzzle isSolved
-// TODO: add logic so that a user can't win if they got there using hints alone
-// TODO: add congratulations modal upon completion of puzzle.
-// TODO: TIMER?
-// TODO: add dark mode toggle
-// TODO: get tiles and letters to fit on mobile well
-// TODO: add toggle between alpha and qwerty
-// TODO: obscure data-attr so that people can't cheat in dev tools
 
 //#region Styles
 const pageStyles = {
@@ -39,15 +27,11 @@ const letterStyles = {
 //#endregion Styles
 
 const IndexPage = () => {
-	const [isModalVisible, setModalVisible] = useState(false);
-
-	const handleSVGClick = () => {
-		setModalVisible(true);
-	};
-
+	//#region hooks
 	// const [puzzle, setPuzzle] = useState(
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
+	const [isModalVisible, setModalVisible] = useState(false);
 	const [puzzle, setPuzzle] = useState(puzzles[4]);
 	const [hintsRemaining, setHintsRemaining] = useState(3);
 	const [showHintKB, setShowHintKB] = useState(true);
@@ -64,7 +48,9 @@ const IndexPage = () => {
 			}))
 		)
 	);
+	//#endregion hooks
 
+	//#region components to be broken out
 	const tiles = solution.map((word, wordIndex) => (
 		<div
 			key={wordIndex}
@@ -92,40 +78,38 @@ const IndexPage = () => {
 		["Z", "X", "C", "V", "B", "N", "M"],
 	];
 
-	const letters =
-		showHintKB &&
-		qwerty.map((row, rowIndex) => (
-			<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
-				{console.log("render")}
-				{row.map((letter, index) => (
-					<div
-						className="flex justify-center items-center"
+	const letters = qwerty.map((row, rowIndex) => (
+		<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
+			{console.log("render")}
+			{row.map((letter, index) => (
+				<div className="flex justify-center items-center" style={letterStyles}>
+					<button
+						key={index}
+						data-value={letter}
 						style={letterStyles}
+						className={
+							disabledButtons.includes(letter)
+								? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
+								: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
+						}
+						onClick={() => handleLetterClick(letter)}
+						disabled={disabledButtons.includes(letter)}
 					>
-						<button
-							key={index}
-							data-value={letter}
-							style={letterStyles}
-							className={
-								disabledButtons.includes(letter)
-									? "w-8 bg-blue-500 text-white font-bold rounded opacity-50 md:text-2xl"
-									: "w-8 bg-blue-500 hover:bg-blue-700 text-white font-bold border border-blue-700 rounded drop-shadow-2xl md:text-2xl"
-							}
-							onClick={() => handleLetterClick(letter)}
-							disabled={disabledButtons.includes(letter)}
-						>
-							{letter}
-						</button>
-					</div>
-				))}
-			</div>
-		));
+						{letter}
+					</button>
+				</div>
+			))}
+		</div>
+	));
+
+	//#endregion
+
+	//#region handlers
+	const handleSVGClick = () => {
+		setModalVisible(true);
+	};
 
 	const handleLetterClick = (letter) => {
-		if (hintsRemaining === 0) {
-			setShowHintKB(false);
-			return;
-		}
 		const updatedSolution = solution.map((word) =>
 			word.map((position) => {
 				if (position.letter === letter) {
@@ -143,7 +127,14 @@ const IndexPage = () => {
 			...prevDisabledButtons,
 			letter,
 		]);
-		setHintsRemaining((prevHintsRemaining) => prevHintsRemaining - 1);
+
+		setHintsRemaining((prevHintsRemaining) => {
+			const newHintsRemaining = prevHintsRemaining - 1;
+			if (newHintsRemaining === 0) {
+				setShowHintKB(false);
+			}
+			return newHintsRemaining;
+		});
 	};
 
 	const handleSubmit = (e) => {
@@ -158,6 +149,7 @@ const IndexPage = () => {
 			}, 1000);
 		}
 	};
+	//#endregion handlers
 
 	return (
 		<main style={pageStyles} className="flex flex-col items-center md:p-5">
@@ -215,7 +207,7 @@ const IndexPage = () => {
 			</form>
 			<p>Hints remaining: {hintsRemaining}</p>
 			<div className="flex flex-col justify-center w-11/12 lg:w-3/4 items-center mt-3">
-				{letters}
+				{showHintKB ? letters : null}
 			</div>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
 			{showCongratulationsModal && (
