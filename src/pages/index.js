@@ -51,6 +51,16 @@ const IndexPage = () => {
 	//#endregion hooks
 
 	//#region components to be broken out
+	const dropdownMenu = (
+		<div className="fixed w-full fixed left-4 md:left-7 top-9 h-full flex items-center modal-overlay drop-shadow-xl ">
+			<div className="text-center bg-white p-2 rounded max-w-xs	modal">
+				<uL>
+					<li>Toggle Darkmode</li>
+				</uL>
+			</div>
+		</div>
+	);
+
 	const tiles = solution.map((word, wordIndex) => (
 		<div
 			key={wordIndex}
@@ -162,7 +172,7 @@ const IndexPage = () => {
 
 	return (
 		<main style={pageStyles} className="flex flex-col items-center md:p-5">
-			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg px-4 md:px-7">
+			<header className="w-full text-center flex flex-row items-center justify-between mb-3 md:mb-8 md:justify-center border-bottom-solid border-2 border-slate-600 border-x-0 drop-shadow-lg px-2 md:px-7">
 				<div className="flex items-center justify-start grow-[1]">
 					<div className="svg-wrapper">
 						<svg
@@ -208,13 +218,16 @@ const IndexPage = () => {
 					</div>
 				</div>
 			</header>
+
 			<h2 className="text-2xl md:text-3xl">Today's clue:</h2>
 			<p className="w-11/12 text-center text-3xl md:text-4xl mb-3">
 				{puzzle.clue}
 			</p>
+
 			<div className="flex flex-col w-11/12 md:flex-row flex-wrap justify-center mt-3">
 				{tiles}
 			</div>
+
 			<form className="w-11/12 max-w-sm mb-3 mt-3" onSubmit={handleSubmit}>
 				<div className="flex items-center border-b border-slate-500 py-2">
 					<input
