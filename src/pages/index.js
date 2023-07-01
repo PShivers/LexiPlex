@@ -195,6 +195,12 @@ const IndexPage = () => {
 						aria-label="Answer"
 						onChange={(e) => setAnswer(e.target.value)}
 					/>
+					<button
+						class="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-4 text-white py-0 px-1 rounded"
+						type="submit"
+					>
+						Submit
+					</button>
 				</div>
 			</form>
 			<p>Hints used: {hintCount}</p>
@@ -226,7 +232,6 @@ const IndexPage = () => {
   }
   `}
 			</style>
-			;
 		</main>
 	);
 };
