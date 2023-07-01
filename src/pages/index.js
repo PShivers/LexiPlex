@@ -48,7 +48,7 @@ const IndexPage = () => {
 	// const [puzzle, setPuzzle] = useState(
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
-	const [puzzle, setPuzzle] = useState(puzzles[6]);
+	const [puzzle, setPuzzle] = useState(puzzles[4]);
 	const [hintCount, setHintCount] = useState(0);
 	const [disabledButtons, setDisabledButtons] = useState([]);
 	const [answer, setAnswer] = useState("");
