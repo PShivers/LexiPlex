@@ -28,7 +28,7 @@ const letterStyles = {
 
 const IndexPage = () => {
 	//#region hooks
-	const puzzle = puzzles[4];
+	const puzzle = puzzles[0];
 	// const [puzzle, setPuzzle] = useState(
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
