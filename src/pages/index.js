@@ -3,6 +3,7 @@ import { useState } from "react";
 import Modal from "../components/modal";
 import CongratulationsModal from "../components/congratulationsModal";
 const puzzles = require("../../utils/puzzles");
+// const puzzle = require("../../utils/puzzle-data.json");
 
 //#region Styles
 const pageStyles = {
@@ -28,7 +29,7 @@ const letterStyles = {
 
 const IndexPage = () => {
 	//#region hooks
-	const puzzle = puzzles[0];
+	const puzzle = puzzles[1];
 	// const [puzzle, setPuzzle] = useState(
 	// 	puzzles[Math.floor(Math.random() * puzzles.length)]
 	// );
