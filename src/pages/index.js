@@ -40,7 +40,8 @@ const IndexPage = () => {
 
 	//#region state
 	const [isModalVisible, setModalVisible] = useState(false);
-	const [hintsRemaining, setHintsRemaining] = useState(3);
+	const initialHints = compoundLength <= 5 ? 1 : compoundLength <= 8 ? 2 : 3;
+	const [hintsRemaining, setHintsRemaining] = useState(initialHints);
 	const [hintsDisabled, setHintsDisabled] = useState(false);
 	const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
 	const [showWrongAnswerFeedback, setShowWrongAnswerFeedback] = useState(false);
