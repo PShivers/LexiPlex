@@ -2,9 +2,8 @@ import React from "react";
 
 const Modal = ({ closeModal }) => {
 	return (
-		// <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm	">
-		<div className="fixed w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm	">
-			<div className="text-center bg-white p-6 rounded max-w-xs	modal">
+		<div className="fixed w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm">
+			<div className="text-center bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded max-w-xs modal">
 				<h3 className="text-xl font-bold mb-4">How To Play</h3>
 				<p className="mb-4">
 					Lexiplex is a word puzzle game where you are given a clue and the

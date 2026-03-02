@@ -2,9 +2,8 @@ import React from "react";
 
 const CongratulationsModal = ({ closeModal }) => {
 	return (
-		// <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm	">
-		<div className="fixed w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm	">
-			<div className="flex flex-col justify-center text-center bg-white p-6 rounded max-w-xs	modal">
+		<div className="fixed w-full h-full flex items-center justify-center modal-overlay drop-shadow-xl backdrop-blur-sm">
+			<div className="flex flex-col justify-center text-center bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded max-w-xs modal">
 				<h3 className="text-xl font-bold mb-4">Congratulations!</h3>
 				<p className="mb-4">You have solved the puzzle!</p>
 				<p className="mb-4">Come back tomorrow for another puzzle</p>
