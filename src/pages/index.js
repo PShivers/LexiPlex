@@ -55,15 +55,15 @@ const IndexPage = () => {
 	useEffect(() => {
 		const handleKeyDown = (e) => {
 			const { typedLetters, cursor, submitted, solution } = stateRef.current;
-			if (submitted) return;
 
 			if (e.key === "Enter") {
-				handleSubmitRef.current();
+				if (!submitted) handleSubmitRef.current();
 				return;
 			}
 
 			if (e.key === "Backspace") {
 				e.preventDefault();
+				if (submitted) setSubmitted(false);
 				let { wordIndex, letterIndex } = cursor;
 
 				// If current position is empty, move back one
@@ -89,6 +89,7 @@ const IndexPage = () => {
 			}
 
 			if (/^[a-zA-Z]$/.test(e.key)) {
+				if (submitted) setSubmitted(false);
 				const { wordIndex, letterIndex } = cursor;
 				const char = e.key.toUpperCase();
 
@@ -132,10 +133,7 @@ const IndexPage = () => {
 			setShowCongratulationsModal(true);
 		} else {
 			setShowWrongAnswerFeedback(true);
-			setTimeout(() => {
-				setShowWrongAnswerFeedback(false);
-				setSubmitted(false);
-			}, 1000);
+			setTimeout(() => setShowWrongAnswerFeedback(false), 600);
 		}
 	};
 	//#endregion
