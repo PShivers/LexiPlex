@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-LexiPlex is a daily word puzzle game (Gatsby/React static site) deployed at https://lexiplex.gatsbyjs.io/. Players solve compound word puzzles: given a clue, they figure out a word that splits into two meaningful subwords (e.g., "MUSTACHE = MUST + ACHE").
+LexiPlex is a daily word puzzle game (Gatsby/React static site) deployed at <https://lexiplex.gatsbyjs.io/>. Players solve compound word puzzles: given a clue, they figure out a word that splits into two meaningful subwords (e.g., "MUSTACHE = MUST + ACHE").
 
 ## Development Commands
 
@@ -16,6 +16,7 @@ npm run clean     # Clear Gatsby cache and public/
 ```
 
 **Node version:** Requires Node 20. The system has Node 25 (Homebrew) which breaks Gatsby's lmdb bindings. Always prepend Node 20 to PATH:
+
 ```bash
 env PATH="/home/pshivers/.nvm/versions/node/v20.20.0/bin:$PATH" /home/pshivers/.nvm/versions/node/v20.20.0/bin/npm run develop
 ```
@@ -27,6 +28,7 @@ No test or lint commands are configured.
 **Single-page app** — all game logic lives in `src/pages/index.js` as one large React component. There is no routing or backend.
 
 **Puzzle data** is hardcoded in `utils/puzzles.js`. Each puzzle has:
+
 ```js
 { word, subword1, subword2, clue, structure, answer }
 // answer format: "mustache must ache" (space-separated: full word + the two parts)
@@ -35,12 +37,14 @@ No test or lint commands are configured.
 The active puzzle is selected by array index (`puzzles[1]` hardcoded at top of `index.js`). There is no date-based rotation yet.
 
 **Game flow:**
+
 1. User reads the clue
 2. Clicks letter buttons on the QWERTY keyboard to reveal hint tiles (3 hints max)
 3. Types the full compound word into the text input and submits
 4. Correct → congratulations modal; Wrong → 1-second red flash animation
 
 **Components:**
+
 - `src/components/modal.js` — "How To Play" instructions modal
 - `src/components/congratulationsModal.js` — Victory modal
 
