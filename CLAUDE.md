@@ -15,6 +15,11 @@ npm run serve     # Serve production build locally
 npm run clean     # Clear Gatsby cache and public/
 ```
 
+**Node version:** Requires Node 20. The system has Node 25 (Homebrew) which breaks Gatsby's lmdb bindings. Always prepend Node 20 to PATH:
+```bash
+env PATH="/home/pshivers/.nvm/versions/node/v20.20.0/bin:$PATH" /home/pshivers/.nvm/versions/node/v20.20.0/bin/npm run develop
+```
+
 No test or lint commands are configured.
 
 ## Architecture

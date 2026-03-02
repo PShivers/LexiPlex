@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Modal from "../components/modal";
 import CongratulationsModal from "../components/congratulationsModal";
 const puzzles = require("../../utils/puzzles");
@@ -18,10 +18,6 @@ const tileRowStyles = {
 	minHeight: "25.6px",
 };
 
-const letterStyles = {
-	minWidth: "10%",
-	minHeight: "10%",
-};
 //#endregion Styles
 
 const IndexPage = () => {
@@ -30,8 +26,6 @@ const IndexPage = () => {
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [hintsRemaining, setHintsRemaining] = useState(3);
 	const [hintsDisabled, setHintsDisabled] = useState(false);
-	const [disabledButtons, setDisabledButtons] = useState([]);
-	const [answer, setAnswer] = useState("");
 	const [showCongratulationsModal, setShowCongratulationsModal] =
 		useState(false);
 	const [showWrongAnswerFeedback, setShowWrongAnswerFeedback] = useState(false);
@@ -43,68 +37,160 @@ const IndexPage = () => {
 			}))
 		)
 	);
+	const [typedLetters, setTypedLetters] = useState(
+		puzzle.answer.split(" ").map((word) => Array(word.length).fill(""))
+	);
+	const [cursor, setCursor] = useState({ wordIndex: 0, letterIndex: 0 });
+	const [submitted, setSubmitted] = useState(false);
 	const [darkMode, setDarkMode] = useState(false);
 
 	useEffect(() => {
 		setDarkMode(document.documentElement.classList.contains("dark"));
 	}, []);
+
+	// Use refs so the keydown handler always sees current state
+	const stateRef = useRef();
+	stateRef.current = { typedLetters, cursor, submitted, solution };
+
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			const { typedLetters, cursor, submitted, solution } = stateRef.current;
+			if (submitted) return;
+
+			if (e.key === "Enter") {
+				handleSubmitRef.current();
+				return;
+			}
+
+			if (e.key === "Backspace") {
+				e.preventDefault();
+				let { wordIndex, letterIndex } = cursor;
+
+				// If current position is empty, move back one
+				if (!typedLetters[wordIndex][letterIndex]) {
+					if (letterIndex > 0) {
+						letterIndex--;
+					} else if (wordIndex > 0) {
+						wordIndex--;
+						letterIndex = solution[wordIndex].length - 1;
+					} else {
+						return;
+					}
+				}
+
+				const newTyped = typedLetters.map((word, wi) =>
+					word.map((char, li) =>
+						wi === wordIndex && li === letterIndex ? "" : char
+					)
+				);
+				setTypedLetters(newTyped);
+				setCursor({ wordIndex, letterIndex });
+				return;
+			}
+
+			if (/^[a-zA-Z]$/.test(e.key)) {
+				const { wordIndex, letterIndex } = cursor;
+				const char = e.key.toUpperCase();
+
+				const newTyped = typedLetters.map((word, wi) =>
+					word.map((c, li) =>
+						wi === wordIndex && li === letterIndex ? char : c
+					)
+				);
+				setTypedLetters(newTyped);
+
+				// Advance cursor
+				const currentWordLength = solution[wordIndex].length;
+				if (letterIndex < currentWordLength - 1) {
+					setCursor({ wordIndex, letterIndex: letterIndex + 1 });
+				} else if (wordIndex < solution.length - 1) {
+					setCursor({ wordIndex: wordIndex + 1, letterIndex: 0 });
+				}
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
 	//#endregion hooks
 
+	//#region submit handler (ref so keydown closure can call it)
+	const handleSubmitRef = useRef();
+	handleSubmitRef.current = () => {
+		const { typedLetters, solution } = stateRef.current;
+		const isComplete = typedLetters.every((word) =>
+			word.every((char) => char !== "")
+		);
+		if (!isComplete) return;
+
+		const isCorrect = solution.every((word, wi) =>
+			word.every((pos, li) => typedLetters[wi][li] === pos.letter)
+		);
+
+		setSubmitted(true);
+		if (isCorrect) {
+			setShowCongratulationsModal(true);
+		} else {
+			setShowWrongAnswerFeedback(true);
+			setTimeout(() => {
+				setShowWrongAnswerFeedback(false);
+				setSubmitted(false);
+			}, 1000);
+		}
+	};
+	//#endregion
+
 	//#region components to be broken out
+	const allAnswerLetters = new Set(solution.flat().map((p) => p.letter));
+
+	const getTileClass = (position, typedChar, isAtCursor) => {
+		const base = "font-bold rounded border w-6 min-h-full text-center";
+
+		if (submitted) {
+			if (position.guessed || (typedChar && typedChar === position.letter)) {
+				return `${base} bg-green-500 text-white border-green-600`;
+			}
+			if (typedChar && allAnswerLetters.has(typedChar)) {
+				return `${base} bg-yellow-400 dark:bg-yellow-500 text-white border-yellow-500`;
+			}
+			if (typedChar) {
+				return `${base} bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border-gray-400 dark:border-gray-500`;
+			}
+		}
+
+		const cursorRing = isAtCursor
+			? " ring-2 ring-blue-400 dark:ring-blue-300"
+			: "";
+		return `${base} bg-white dark:bg-gray-700 text-blue-500 dark:text-blue-400 border-slate-300 dark:border-gray-600${cursorRing}`;
+	};
+
 	const tiles = solution.map((word, wordIndex) => (
 		<div
 			key={wordIndex}
 			style={tileRowStyles}
-			className="flex justify-center h-full mb-2 md:mt-0 md:mr-3"
+			className={`flex justify-center h-full mb-2 md:mt-0 md:mr-3${showWrongAnswerFeedback ? " wrong-answer" : ""}`}
 		>
-			{word.map((position, index) => (
-				<div key={index} style={tileRowStyles}>
-					<div
-						key={index}
-						data-value={position.letter}
-						className="bg-white dark:bg-gray-700 text-blue-500 dark:text-blue-400 font-bold rounded border border-slate-300 dark:border-gray-600 w-6 min-h-full text-center"
-					>
-						{position.guessed ? position.letter : null}
+			{word.map((position, index) => {
+				const typedChar = typedLetters[wordIndex]?.[index];
+				const isAtCursor =
+					!submitted &&
+					cursor.wordIndex === wordIndex &&
+					cursor.letterIndex === index;
+				const display = position.guessed ? position.letter : typedChar || null;
+				return (
+					<div key={index} style={tileRowStyles}>
+						<div
+							data-value={position.letter}
+							className={getTileClass(position, typedChar, isAtCursor)}
+						>
+							{display}
+						</div>
 					</div>
-				</div>
-			))}
+				);
+			})}
 		</div>
 	));
 
-	const qwerty = [
-		["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-		["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-		["Z", "X", "C", "V", "B", "N", "M"],
-	];
-
-	const letters = qwerty.map((row, rowIndex) => (
-		<div key={rowIndex} className="mb-2 flex justify-center w-full sm:w-1/2">
-			{row.map((letter, index) => (
-				<div
-					className="flex justify-center items-center"
-					key={index}
-					style={letterStyles}
-				>
-					<button
-						key={index}
-						data-value={letter}
-						style={letterStyles}
-						className={
-							disabledButtons.includes(letter) || hintsDisabled === true
-								? "w-8 bg-blue-500 text-white font-bold border border-blue-500 rounded md:text-2xl opacity-50"
-								: "w-8 bg-blue-500 text-white font-bold border border-blue-700 rounded md:text-2xl drop-shadow-2xl hover:bg-blue-700"
-						}
-						onClick={() => handleLetterClick(letter)}
-						disabled={
-							disabledButtons.includes(letter) || hintsDisabled === true
-						}
-					>
-						{letter}
-					</button>
-				</div>
-			))}
-		</div>
-	));
 
 	//#endregion
 
@@ -125,45 +211,51 @@ const IndexPage = () => {
 		setModalVisible(true);
 	};
 
-	const handleLetterClick = (letter) => {
-		const updatedSolution = solution.map((word) =>
-			word.map((position) => {
-				if (position.letter === letter) {
-					return {
-						...position,
-						guessed: true,
-					};
-				}
-				return position;
+	const handleHint = () => {
+		const unrevealed = [];
+		solution.forEach((word, wi) =>
+			word.forEach((pos, li) => {
+				if (!pos.guessed) unrevealed.push({ wi, li });
 			})
 		);
+		if (unrevealed.length === 0) return;
 
-		setSolution(updatedSolution);
-		setDisabledButtons((prevDisabledButtons) => [
-			...prevDisabledButtons,
-			letter,
-		]);
+		const { wi, li } = unrevealed[Math.floor(Math.random() * unrevealed.length)];
 
-		setHintsRemaining((prevHintsRemaining) => {
-			const newHintsRemaining = prevHintsRemaining - 1;
-			if (newHintsRemaining === 0) {
-				setHintsDisabled(true);
+		// Map (wordIndex, letterIndex) to a unified index in the compound word.
+		// Structure 1: row 0 = full word, row 1 = subword1, row 2 = subword2
+		//   row 0 and row 1 share the same index; row 2 is offset by len(row 1)
+		// Structure 2: row 2 = full word, row 0 = subword1, row 1 = subword2
+		//   row 2 and row 0 share the same index; row 1 is offset by len(row 0)
+		const getCompoundIndex = (wordIdx, letterIdx) => {
+			if (puzzle.structure === 1) {
+				return wordIdx === 2
+					? letterIdx + solution[1].length
+					: letterIdx;
+			} else {
+				return wordIdx === 1
+					? letterIdx + solution[0].length
+					: letterIdx;
 			}
-			return newHintsRemaining;
+		};
+
+		const targetIndex = getCompoundIndex(wi, li);
+
+		setSolution((prev) =>
+			prev.map((word, wordIndex) =>
+				word.map((pos, letterIndex) =>
+					getCompoundIndex(wordIndex, letterIndex) === targetIndex
+						? { ...pos, guessed: true }
+						: pos
+				)
+			)
+		);
+
+		setHintsRemaining((prev) => {
+			const next = prev - 1;
+			if (next === 0) setHintsDisabled(true);
+			return next;
 		});
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		if (answer.toLowerCase() === puzzle.answer.toLowerCase()) {
-			setShowCongratulationsModal(true);
-		} else {
-			setShowWrongAnswerFeedback(true);
-
-			setTimeout(() => {
-				setShowWrongAnswerFeedback(false);
-			}, 1000);
-		}
 	};
 	//#endregion handlers
 
@@ -228,29 +320,20 @@ const IndexPage = () => {
 				{tiles}
 			</div>
 
-			<form className="w-11/12 max-w-sm mb-3 mt-3" onSubmit={handleSubmit}>
-				<div className="flex items-center border-b border-slate-500 dark:border-gray-500 py-2">
-					<input
-						className={`appearance-none bg-transparent border-none w-full text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 mr-3 py-1 px-2 leading-tight focus:outline-none ${
-							showWrongAnswerFeedback ? "wrong-answer" : ""
-						}`}
-						type="text"
-						placeholder="Your answer here..."
-						aria-label="Answer"
-						onChange={(e) => setAnswer(e.target.value)}
-					/>
-					<button
-						className="flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-4 text-white py-0 px-1 rounded"
-						type="submit"
-					>
-						Submit
-					</button>
-				</div>
-			</form>
-			<p>Hints remaining: {hintsRemaining}</p>
-			<div className="flex flex-col justify-center w-11/12 lg:w-3/4 items-center mt-3">
-				{letters}
-			</div>
+			<button
+				className="mt-4 mb-3 flex-shrink-0 bg-blue-500 hover:bg-blue-700 border-blue-500 hover:border-blue-700 text-sm border-4 text-white py-1 px-3 rounded"
+				onClick={() => handleSubmitRef.current()}
+			>
+				Submit
+			</button>
+
+			<button
+				className="mt-1 mb-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-400 dark:border-gray-500 text-sm text-gray-700 dark:text-gray-200 py-1 px-3 rounded disabled:opacity-40"
+				onClick={handleHint}
+				disabled={hintsDisabled}
+			>
+				Hint ({hintsRemaining} left)
+			</button>
 			{isModalVisible && <Modal closeModal={() => setModalVisible(false)} />}
 			{showCongratulationsModal && (
 				<CongratulationsModal
@@ -260,19 +343,15 @@ const IndexPage = () => {
 			<style>
 				{`
   .wrong-answer {
-    animation: wrong-answer-animation 1s linear;
+    animation: wrong-answer-shake 0.5s ease-in-out;
   }
 
-  @keyframes wrong-answer-animation {
-    0% {
-      color: inherit;
-    }
-    5% {
-      color: red;
-    }
-    100% {
-      color: inherit;
-    }
+  @keyframes wrong-answer-shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-5px); }
+    40%       { transform: translateX(5px); }
+    60%       { transform: translateX(-5px); }
+    80%       { transform: translateX(5px); }
   }
   `}
 			</style>
