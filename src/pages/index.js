@@ -15,7 +15,7 @@ const logoStyles = {
 };
 
 const tileStyles = {
-	minHeight: "25.6px",
+	minHeight: "72px",
 };
 //#endregion Styles
 
@@ -132,7 +132,7 @@ const IndexPage = () => {
 	);
 
 	const getTileClass = (compoundIndex, isAtCursor) => {
-		const base = "font-bold rounded border w-6 min-h-full text-center";
+		const base = "font-bold rounded border w-[72px] h-[72px] text-4xl flex items-center justify-center m-1";
 		const typedChar = typedLetters[compoundIndex];
 		const correctLetter = solution[compoundRowIdx][compoundIndex].letter;
 		const isGuessed = solution[compoundRowIdx][compoundIndex].guessed;
