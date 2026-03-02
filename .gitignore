@@ -3,3 +3,4 @@ node_modules/
 public
 utils/en-dictionary.js
 1000.json
+.claude/settings.local.json
