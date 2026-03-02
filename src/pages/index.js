@@ -159,7 +159,7 @@ const IndexPage = () => {
 		}
 
 		const cursorRing = isAtCursor
-			? " ring-2 ring-blue-400 dark:ring-blue-300"
+			? " ring-2 ring-blue-400 dark:ring-blue-300 relative z-10"
 			: "";
 		return `${base} bg-white dark:bg-gray-700 text-blue-500 dark:text-blue-400 border-slate-300 dark:border-gray-600${cursorRing}`;
 	};
