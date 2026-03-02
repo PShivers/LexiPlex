@@ -20,7 +20,10 @@ const tileStyles = {
 //#endregion Styles
 
 const IndexPage = () => {
-	const puzzle = puzzles[1];
+	const epoch = new Date("2025-01-01");
+	const today = new Date();
+	const dayIndex = Math.floor((today - epoch) / 86400000) % puzzles.length;
+	const puzzle = puzzles[dayIndex];
 
 	// Structure 1: solution[0] = compound word, solution[1] = subword1, solution[2] = subword2
 	// Structure 2: solution[2] = compound word, solution[0] = subword1, solution[1] = subword2
@@ -38,6 +41,8 @@ const IndexPage = () => {
 		}
 	};
 
+	const compoundLength = puzzle.answer.split(" ")[compoundRowIdx].length;
+
 	//#region state
 	const [isModalVisible, setModalVisible] = useState(false);
 	const initialHints = compoundLength <= 5 ? 1 : compoundLength <= 8 ? 2 : 3;
@@ -54,7 +59,6 @@ const IndexPage = () => {
 		)
 	);
 	// typedLetters is a flat array indexed by compound word position
-	const compoundLength = puzzle.answer.split(" ")[compoundRowIdx].length;
 	const [typedLetters, setTypedLetters] = useState(
 		Array(compoundLength).fill("")
 	);
@@ -75,6 +79,18 @@ const IndexPage = () => {
 		const handleKeyDown = (e) => {
 			const { typedLetters, cursor, submitted, solution } = stateRef.current;
 			const compoundLen = solution[compoundRowIdx].length;
+			const compoundRow = solution[compoundRowIdx];
+
+			const skipForward = (pos) => {
+				let i = pos;
+				while (i < compoundLen - 1 && compoundRow[i].guessed) i++;
+				return i;
+			};
+			const skipBackward = (pos) => {
+				let i = pos;
+				while (i > 0 && compoundRow[i].guessed) i--;
+				return i;
+			};
 
 			if (e.key === "Enter") {
 				if (!submitted) handleSubmitRef.current();
@@ -85,9 +101,9 @@ const IndexPage = () => {
 				e.preventDefault();
 				if (submitted) setSubmitted(false);
 
-				// If current position is empty, move back one and clear that
-				const targetIdx = !typedLetters[cursor]
-					? Math.max(0, cursor - 1)
+				// If current position is empty or guessed, move back past guessed
+				const targetIdx = (!typedLetters[cursor] || compoundRow[cursor].guessed)
+					? skipBackward(Math.max(0, cursor - 1))
 					: cursor;
 				setTypedLetters(typedLetters.map((c, i) => (i === targetIdx ? "" : c)));
 				setCursor(targetIdx);
@@ -96,9 +112,10 @@ const IndexPage = () => {
 
 			if (/^[a-zA-Z]$/.test(e.key)) {
 				if (submitted) setSubmitted(false);
+				if (compoundRow[cursor].guessed) return;
 				const char = e.key.toUpperCase();
 				setTypedLetters(typedLetters.map((c, i) => (i === cursor ? char : c)));
-				setCursor(Math.min(cursor + 1, compoundLen - 1));
+				setCursor(skipForward(Math.min(cursor + 1, compoundLen - 1)));
 			}
 		};
 
@@ -111,10 +128,10 @@ const IndexPage = () => {
 	const handleSubmitRef = useRef();
 	handleSubmitRef.current = () => {
 		const { typedLetters, solution } = stateRef.current;
-		if (typedLetters.some((c) => c === "")) return;
+		if (typedLetters.some((c, i) => c === "" && !solution[compoundRowIdx][i].guessed)) return;
 
 		const isCorrect = solution[compoundRowIdx].every(
-			(pos, i) => typedLetters[i] === pos.letter
+			(pos, i) => pos.guessed || typedLetters[i] === pos.letter
 		);
 
 		setSubmitted(true);
@@ -126,6 +143,16 @@ const IndexPage = () => {
 		}
 	};
 	//#endregion
+
+	// Push cursor forward if a hint lands on the current cursor position
+	useEffect(() => {
+		const compoundRow = solution[compoundRowIdx];
+		if (compoundRow[cursor]?.guessed) {
+			let next = cursor + 1;
+			while (next < compoundRow.length - 1 && compoundRow[next].guessed) next++;
+			if (!compoundRow[next]?.guessed) setCursor(next);
+		}
+	}, [solution]);
 
 	//#region tile helpers
 	const allAnswerLetters = new Set(
