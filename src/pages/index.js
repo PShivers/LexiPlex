@@ -20,7 +20,10 @@ const tileStyles = {
 //#endregion Styles
 
 const IndexPage = () => {
-	const puzzle = puzzles[1];
+	const epoch = new Date("2025-01-01");
+	const today = new Date();
+	const dayIndex = Math.floor((today - epoch) / 86400000) % puzzles.length;
+	const puzzle = puzzles[dayIndex];
 
 	// Structure 1: solution[0] = compound word, solution[1] = subword1, solution[2] = subword2
 	// Structure 2: solution[2] = compound word, solution[0] = subword1, solution[1] = subword2
@@ -38,6 +41,8 @@ const IndexPage = () => {
 		}
 	};
 
+	const compoundLength = puzzle.answer.split(" ")[compoundRowIdx].length;
+
 	//#region state
 	const [isModalVisible, setModalVisible] = useState(false);
 	const initialHints = compoundLength <= 5 ? 1 : compoundLength <= 8 ? 2 : 3;
@@ -54,7 +59,6 @@ const IndexPage = () => {
 		)
 	);
 	// typedLetters is a flat array indexed by compound word position
-	const compoundLength = puzzle.answer.split(" ")[compoundRowIdx].length;
 	const [typedLetters, setTypedLetters] = useState(
 		Array(compoundLength).fill("")
 	);
